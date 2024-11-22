@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Permit Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .form-section {
+            margin-bottom: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Building Permit Application</h1>
+    <form id="permitForm">
+        <!-- Step 1: Property Address -->
+        <div class="form-section" id="step1">
+            <h3>Step 1: Property Address</h3>
+            <label for="propertyAddress">Enter Property Address:</label>
+            <input type="text" id="propertyAddress" placeholder="Enter property address" required>
+            <button type="button" onclick="fetchZoning()">Check Zoning</button>
+            <p id="addressFeedback"></p>
+        </div>
+
+        <!-- Zoning Information -->
+        <div class="form-section hidden" id="zoningSection">
+            <h3>Zoning Information</h3>
+            <p><strong>Zone Type:</strong> <span id="zoneType"></span> 
+               <button type="button" id="moreInfoButton" onclick="toggleDetails()">More Info</button>
+            </p>
+            <div id="zoningDetails" class="hidden">
+                <p><strong>Permitted Uses:</strong></p>
+                <ul id="permittedUses"></ul>
+                <p><strong>Building Rules:</strong></p>
+                <ul id="buildingRules"></ul>
+                <p><strong>Parking Requirements:</strong></p>
+                <ul id="parkingRequirements"></ul>
+            </div>
+        </div>
+
+        <!-- Step 2: Scope of Work -->
+        <div class="form-section hidden" id="step2">
+            <h3>Step 2: Scope of Work</h3>
+            <label for="scope">Describe the Scope of Work:</label>
+            <select id="scope" onchange="showAdditionalFields()" required>
+                <option value="">--Select--</option>
+                <option value="New Construction">New Construction</option>
+                <option value="Renovation">Renovation / Alteration</option>
+                <option value="Pool">Pool / Hot Tub</option>
+                <option value="Retaining Walls">Retaining Walls</option>
+                <option value="Secondary Suites">Secondary Suites</option>
+                <option value="Demolition">Demolition</option>
+                <option value="Solar Panels">Solar Panels</option>
+            </select>
+        </div>
+
+        <!-- Additional Fields (Dynamically Shown) -->
+        <div class="form-section hidden" id="additionalFields">
+            <h3>Additional Details</h3>
+            <label for="details">Provide Specific Details:</label>
+            <textarea id="details" placeholder="Describe your work in detail"></textarea>
+        </div>
+
+        <!-- Submission -->
+        <div class="form-section hidden" id="submissionSection">
+            <h3>Submit Your Application</h3>
+            <label for="declaration">
+                <input type="checkbox" id="declaration" required> I confirm the information provided is accurate.
+            </label>
+            <button type="submit">Submit Application</button>
+        </div>
+    </form>
+
+    <script>
+        const zoningDatabase = {
+            RS1: {
+                type: "Single-Family Residential",
+                permitted_uses: ["Single-Family Dwelling", "Accessory Buildings", "Child Care Facility"],
+                building_rules: { maximum_height: "7.62 meters", setbacks: { front: "7.6 m", rear: "9.1 m" } },
+                parking: { spaces_per_unit: 1 }
+            }
+        };
+
+        function fetchZoning() {
+            const address = document.getElementById('propertyAddress').value.trim();
+            const feedback = document.getElementById('addressFeedback');
+            const zoningSection = document.getElementById('zoningSection');
+            const zoneType = document.getElementById('zoneType');
+            const permittedUses = document.getElementById('permittedUses');
+            const buildingRules = document.getElementById('buildingRules');
+            const parkingRequirements = document.getElementById('parkingRequirements');
+            const step2 = document.getElementById('step2');
+
+            feedback.textContent = "";
+            zoningSection.classList.add('hidden');
+            permittedUses.innerHTML = "";
+            buildingRules.innerHTML = "";
+            parkingRequirements.innerHTML = "";
+
+            const zone = address === "123 Main St" ? "RS1" : null;
+
+            if (zone && zoningDatabase[zone]) {
+                feedback.textContent = "Zoning information found!";
+                feedback.className = "success";
+                const data = zoningDatabase[zone];
+                zoneType.textContent = data.type;
+                data.permitted_uses.forEach(use => {
+                    const li = document.createElement('li');
+                    li.textContent = use;
+                    permittedUses.appendChild(li);
+                });
+                for (const [rule, value] of Object.entries(data.building_rules)) {
+                    const li = document.createElement('li');
+                    li.textContent = `${rule}: ${value}`;
+                    buildingRules.appendChild(li);
+                }
+                zoningSection.classList.remove('hidden');
+                step2.classList.remove('hidden');
+            } else {
+                feedback.textContent = "Address not found or invalid.";
+                feedback.className = "error";
+            }
+        }
+
+        function toggleDetails() {
+            const zoningDetails = document.getElementById('zoningDetails');
+            const moreInfoButton = document.getElementById('moreInfoButton');
+            if (zoningDetails.classList.contains('hidden')) {
+                zoningDetails.classList.remove('hidden');
+                moreInfoButton.textContent = "Hide Info";
+            } else {
+                zoningDetails.classList.add('hidden');
+                moreInfoButton.textContent = "More Info";
+            }
+        }
+
+        function showAdditionalFields() {
+            document.getElementById('additionalFields').classList.remove('hidden');
+            document.getElementById('submissionSection').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
