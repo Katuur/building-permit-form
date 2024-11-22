@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>West Vancouver Zoning Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .form-section {
+            margin-bottom: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>West Vancouver Zoning Permit Application</h1>
+    <form id="zoningForm">
+        <!-- Address Input Section -->
+        <div class="form-section">
+            <label for="address">Property Address:</label>
+            <input type="text" id="address" placeholder="Enter property address" required>
+            <button type="button" onclick="fetchZoning()">Check Zoning</button>
+            <p id="addressFeedback"></p>
+        </div>
+
+        <!-- Zoning Information -->
+        <div class="form-section hidden" id="zoningSection">
+            <h3>Zoning Information</h3>
+            <p><strong>Zone Type:</strong> <span id="zoneType"></span></p>
+            <p><strong>Permitted Uses:</strong></p>
+            <ul id="permittedUses"></ul>
+            <p><strong>Building Rules:</strong></p>
+            <ul id="buildingRules"></ul>
+            <p><strong>Parking Requirements:</strong></p>
+            <ul id="parkingRequirements"></ul>
+        </div>
+
+        <!-- Application Submission -->
+        <div class="form-section hidden" id="applicationSection">
+            <h3>Apply for a Permit</h3>
+            <label for="proposedUse">Proposed Use:</label>
+            <input type="text" id="proposedUse" placeholder="Describe the use" required>
+            <label for="buildingDetails">Building Details (Height, FAR, Setbacks):</label>
+            <textarea id="buildingDetails" placeholder="Enter details" required></textarea>
+            <button type="button" onclick="validateApplication()">Submit Application</button>
+            <p id="applicationFeedback"></p>
+        </div>
+    </form>
+
+    <script>
+        // Mock Zoning Database (Loaded via JSON in real implementation)
+        const zoningDatabase = {
+            RS1: {
+                type: "Single-Family Residential",
+                permitted_uses: [
+                    "Single-Family Dwelling",
+                    "Accessory Buildings",
+                    "Home-Based Business",
+                    "Child Care Facility",
+                    "Secondary Suites"
+                ],
+                density: {
+                    minimum_lot_area: "557.5 m²",
+                    maximum_FAR: 0.35
+                },
+                building_rules: {
+                    maximum_height: "7.62 meters",
+                    storeys: 2,
+                    setbacks: {
+                        front: "7.6 meters",
+                        rear: "9.1 meters",
+                        side: "1.52 meters"
+                    },
+                    site_coverage: "40%"
+                },
+                parking: {
+                    spaces_per_unit: 1
+                }
+            },
+            AC1: {
+                type: "Ambleside Centre Mixed-Use",
+                permitted_uses: [
+                    "Retail",
+                    "Professional Offices",
+                    "Personal Services",
+                    "Apartments (Above Commercial)",
+                    "Restaurants"
+                ],
+                density: {
+                    base_FAR: 1.0,
+                    maximum_FAR_with_amenities: 1.75
+                },
+                building_rules: {
+                    maximum_height: "11.3 meters (3 storeys)",
+                    setbacks: {
+                        front: "0.9 meters",
+                        rear: "1.2 meters"
+                    }
+                },
+                parking: {
+                    commercial: "1 space per 37 m²",
+                    residential: "1 space per unit or 84 m²"
+                }
+            }
+        };
+
+        // Fetch Zoning Information
+        function fetchZoning() {
+            const address = document.getElementById('address').value.trim();
+            const feedback = document.getElementById('addressFeedback');
+            const zoningSection = document.getElementById('zoningSection');
+            const applicationSection = document.getElementById('applicationSection');
+            const zoneType = document.getElementById('zoneType');
+            const permittedUses = document.getElementById('permittedUses');
+            const buildingRules = document.getElementById('buildingRules');
+            const parkingRequirements = document.getElementById('parkingRequirements');
+
+            // Reset feedback and sections
+            feedback.textContent = "";
+            zoningSection.classList.add('hidden');
+            applicationSection.classList.add('hidden');
+            permittedUses.innerHTML = "";
+            buildingRules.innerHTML = "";
+            parkingRequirements.innerHTML = "";
+
+            // Mock Address to Zone Mapping
+            const zone = address === "123 Main St" ? "RS1" : address === "456 Oak Ave" ? "AC1" : null;
+
+            if (zone && zoningDatabase[zone]) {
+                feedback.textContent = "Zoning information found!";
+                feedback.className = "success";
+                const data = zoningDatabase[zone];
+
+                // Populate Zoning Details
+                zoneType.textContent = data.type;
+                data.permitted_uses.forEach(use => {
+                    const li = document.createElement('li');
+                    li.textContent = use;
+                    permittedUses.appendChild(li);
+                });
+                for (const [rule, value] of Object.entries(data.building_rules)) {
+                    const li = document.createElement('li');
+                    li.textContent = `${rule.replace(/_/g, ' ')}: ${value}`;
+                    buildingRules.appendChild(li);
+                }
+                for (const [rule, value] of Object.entries(data.parking)) {
+                    const li = document.createElement('li');
+                    li.textContent = `${rule.replace(/_/g, ' ')}: ${value}`;
+                    parkingRequirements.appendChild(li);
+                }
+
+                zoningSection.classList.remove('hidden');
+                applicationSection.classList.remove('hidden');
+            } else {
+                feedback.textContent = "Address not found or unsupported zone.";
+                feedback.className = "error";
+            }
+        }
+
+        // Validate Application
+        function validateApplication() {
+            const feedback = document.getElementById('applicationFeedback');
+            feedback.textContent = "Application submitted! Validation successful.";
+            feedback.className = "success";
+        }
+    </script>
+</body>
+</html>
