@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>West Vancouver Building Permit Application</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    .form-section {
+      margin-bottom: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>West Vancouver Building Permit Application</h1>
+  
+  <!-- Address Input Section -->
+  <div class="form-section">
+    <label for="address">Property Address:</label>
+    <input type="text" id="address" placeholder="Enter property address" required>
+    <button onclick="fetchPropertyInfo()">Search Property Info</button>
+  </div>
+  
+  <!-- Scope of Work -->
+  <div class="form-section hidden" id="scopeSection">
+    <label for="scope">Scope of Work:</label>
+    <select id="scope" onchange="updateRequirements()">
+      <option value="" disabled selected>Select Scope</option>
+      <option value="pool">Pool</option>
+      <option value="hotTub">Hot Tub</option>
+      <option value="retainingWalls">Retaining Walls</option>
+      <option value="secondarySuite">Secondary Suite</option>
+      <option value="solarPanels">Solar Panels</option>
+      <option value="renovationAddition">Renovation/Addition</option>
+    </select>
+  </div>
+
+  <!-- Dynamic Requirements Checklist -->
+  <div class="form-section hidden" id="requirementsSection">
+    <h3>Required Documentation:</h3>
+    <ul id="requirementsList"></ul>
+  </div>
+
+  <script>
+    // Mock database query for property info
+    function fetchPropertyInfo() {
+      const address = document.getElementById('address').value;
+      if (address) {
+        alert('Property info retrieved for: ' + address);
+        document.getElementById('scopeSection').classList.remove('hidden');
+      } else {
+        alert('Please enter a valid address.');
+      }
+    }
+
+    // Update requirements based on scope
+    function updateRequirements() {
+      const scope = document.getElementById('scope').value;
+      const requirementsList = document.getElementById('requirementsList');
+      requirementsList.innerHTML = ''; // Clear previous entries
+
+      const requirements = {
+        pool: [
+          "2 Site Plans (property lines, pool dimensions, mechanical room)",
+          "2 Copies of structural drawings",
+          "Geotechnical Schedule B & C",
+          "Structural Schedule B & C",
+          "Sections of infinity edge or retaining wall (if applicable)"
+        ],
+        hotTub: [
+          "Survey by BC Land Surveyor",
+          "2 Site Plans (location and grade details)",
+          "Structural Schedules B & C"
+        ],
+        retainingWalls: [
+          "2 Sealed BCLS Surveys",
+          "Topographic data and property-line dimensions",
+          "Geotechnical and Structural Schedules"
+        ],
+        secondarySuite: [
+          "Site plan (parking, setbacks, egress)",
+          "Suite floor plan (window/door sizes, sprinkler info, alarms, separation walls)"
+        ],
+        solarPanels: [
+          "Roof plan, structural drawings, and compliance with Canadian Electrical Code"
+        ],
+        renovationAddition: [
+          "Scope of work letter",
+          "Title search",
+          "Code review (door/window sizes, RSI calcs, setbacks)"
+        ]
+      };
+
+      // Populate requirements based on scope
+      if (requirements[scope]) {
+        requirements[scope].forEach(doc => {
+          const li = document.createElement('li');
+          li.textContent = doc;
+          requirementsList.appendChild(li);
+        });
+        document.getElementById('requirementsSection').classList.remove('hidden');
+      }
+    }
+  </script>
+</body>
+</html>
