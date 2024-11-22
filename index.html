@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,51 +25,38 @@
     </style>
 </head>
 <body>
-    <h1>Building Permit Application Form</h1>
+    <h1>Building Permit Application</h1>
     <form id="permitForm">
-        <!-- Applicant Information -->
-        <div class="form-section">
-            <h3>Applicant Information</h3>
-            <label for="applicantName">Name:</label>
-            <input type="text" id="applicantName" placeholder="Enter your name" required>
-            <label for="applicantContact">Contact Information:</label>
-            <input type="text" id="applicantContact" placeholder="Enter email or phone number" required>
-            <label for="applicantRole">Role:</label>
-            <select id="applicantRole" required>
-                <option value="Owner">Property Owner</option>
-                <option value="Contractor">Contractor</option>
-                <option value="Architect">Architect</option>
-                <option value="Other">Other</option>
-            </select>
-        </div>
-
-        <!-- Property Information -->
-        <div class="form-section">
-            <h3>Property Information</h3>
-            <label for="propertyAddress">Property Address:</label>
+        <!-- Step 1: Property Address -->
+        <div class="form-section" id="step1">
+            <h3>Step 1: Property Address</h3>
+            <label for="propertyAddress">Enter Property Address:</label>
             <input type="text" id="propertyAddress" placeholder="Enter property address" required>
             <button type="button" onclick="fetchZoning()">Check Zoning</button>
             <p id="addressFeedback"></p>
-            <div id="zoningSection" class="hidden">
-                <p><strong>Zone Type:</strong> <span id="zoneType"></span> 
-                   <button type="button" id="moreInfoButton" onclick="toggleDetails()">More Info</button>
-                </p>
-                <div id="zoningDetails" class="hidden">
-                    <p><strong>Permitted Uses:</strong></p>
-                    <ul id="permittedUses"></ul>
-                    <p><strong>Building Rules:</strong></p>
-                    <ul id="buildingRules"></ul>
-                    <p><strong>Parking Requirements:</strong></p>
-                    <ul id="parkingRequirements"></ul>
-                </div>
+        </div>
+
+        <!-- Zoning Information -->
+        <div class="form-section hidden" id="zoningSection">
+            <h3>Zoning Information</h3>
+            <p><strong>Zone Type:</strong> <span id="zoneType"></span>
+               <button type="button" id="moreInfoButton" onclick="toggleDetails()">More Info</button>
+            </p>
+            <div id="zoningDetails" class="hidden">
+                <p><strong>Permitted Uses:</strong></p>
+                <ul id="permittedUses"></ul>
+                <p><strong>Building Rules:</strong></p>
+                <ul id="buildingRules"></ul>
+                <p><strong>Parking Requirements:</strong></p>
+                <ul id="parkingRequirements"></ul>
             </div>
         </div>
 
-        <!-- Scope of Work -->
-        <div class="form-section">
-            <h3>Scope of Work</h3>
-            <label for="scope">Select Permit Type:</label>
-            <select id="scope" onchange="showScopeDetails()" required>
+        <!-- Step 2: Scope of Work -->
+        <div class="form-section hidden" id="step2">
+            <h3>Step 2: Scope of Work</h3>
+            <label for="scope">Describe the Scope of Work:</label>
+            <select id="scope" onchange="showAdditionalFields()" required>
                 <option value="">--Select--</option>
                 <option value="New Construction">New Construction</option>
                 <option value="Renovation">Renovation / Alteration</option>
@@ -80,74 +66,35 @@
                 <option value="Demolition">Demolition</option>
                 <option value="Solar Panels">Solar Panels</option>
             </select>
-            <div id="scopeDetails" class="hidden">
-                <p><strong>Additional Requirements:</strong></p>
-                <ul id="scopeRequirements"></ul>
-            </div>
         </div>
 
-        <!-- Proposed Building Details -->
-        <div class="form-section hidden" id="buildingDetailsSection">
-            <h3>Proposed Building Details</h3>
-            <label for="buildingHeight">Building Height (meters):</label>
-            <input type="number" id="buildingHeight" placeholder="Enter height" required>
-            <label for="buildingSetbacks">Setbacks (front, rear, side):</label>
-            <input type="text" id="buildingSetbacks" placeholder="Enter setbacks" required>
-            <label for="floorArea">Floor Area (sq meters):</label>
-            <input type="number" id="floorArea" placeholder="Enter floor area" required>
+        <!-- Additional Fields (Dynamically Shown) -->
+        <div class="form-section hidden" id="additionalFields">
+            <h3>Additional Details</h3>
+            <label for="details">Provide Specific Details:</label>
+            <textarea id="details" placeholder="Describe your work in detail"></textarea>
         </div>
 
-        <!-- Documentation Upload -->
-        <div class="form-section hidden" id="documentationSection">
-            <h3>Required Documentation</h3>
-            <input type="file" id="fileUpload" multiple>
-            <p>Upload site plans, drawings, and other required documents.</p>
-        </div>
-
-        <!-- Fees and Declarations -->
-        <div class="form-section hidden" id="feesSection">
-            <h3>Fees and Declarations</h3>
-            <p>Estimated Fees: <span id="feesEstimate">$0</span></p>
+        <!-- Submission -->
+        <div class="form-section hidden" id="submissionSection">
+            <h3>Submit Your Application</h3>
             <label for="declaration">
-                <input type="checkbox" id="declaration" required> I confirm that the information provided is accurate.
+                <input type="checkbox" id="declaration" required> I confirm the information provided is accurate.
             </label>
             <button type="submit">Submit Application</button>
         </div>
     </form>
 
     <script>
-        // Mock Zoning Database
         const zoningDatabase = {
             RS1: {
                 type: "Single-Family Residential",
-                permitted_uses: [
-                    "Single-Family Dwelling",
-                    "Accessory Buildings",
-                    "Home-Based Business",
-                    "Child Care Facility",
-                    "Secondary Suites"
-                ],
-                density: {
-                    minimum_lot_area: "557.5 m²",
-                    maximum_FAR: 0.35
-                },
-                building_rules: {
-                    maximum_height: "7.62 meters",
-                    storeys: 2,
-                    setbacks: {
-                        front: "7.6 meters",
-                        rear: "9.1 meters",
-                        side: "1.52 meters"
-                    },
-                    site_coverage: "40%"
-                },
-                parking: {
-                    spaces_per_unit: 1
-                }
+                permitted_uses: ["Single-Family Dwelling", "Accessory Buildings", "Child Care Facility"],
+                building_rules: { maximum_height: "7.62 meters", setbacks: { front: "7.6 m", rear: "9.1 m" } },
+                parking: { spaces_per_unit: 1 }
             }
         };
 
-        // Fetch Zoning Information
         function fetchZoning() {
             const address = document.getElementById('propertyAddress').value.trim();
             const feedback = document.getElementById('addressFeedback');
@@ -156,11 +103,10 @@
             const permittedUses = document.getElementById('permittedUses');
             const buildingRules = document.getElementById('buildingRules');
             const parkingRequirements = document.getElementById('parkingRequirements');
-            const zoningDetails = document.getElementById('zoningDetails');
+            const step2 = document.getElementById('step2');
 
             feedback.textContent = "";
             zoningSection.classList.add('hidden');
-            zoningDetails.classList.add('hidden');
             permittedUses.innerHTML = "";
             buildingRules.innerHTML = "";
             parkingRequirements.innerHTML = "";
@@ -171,7 +117,6 @@
                 feedback.textContent = "Zoning information found!";
                 feedback.className = "success";
                 const data = zoningDatabase[zone];
-
                 zoneType.textContent = data.type;
                 data.permitted_uses.forEach(use => {
                     const li = document.createElement('li');
@@ -180,12 +125,13 @@
                 });
                 for (const [rule, value] of Object.entries(data.building_rules)) {
                     const li = document.createElement('li');
-                    li.textContent = `${rule.replace(/_/g, ' ')}: ${value}`;
+                    li.textContent = `${rule}: ${value}`;
                     buildingRules.appendChild(li);
                 }
                 zoningSection.classList.remove('hidden');
+                step2.classList.remove('hidden');
             } else {
-                feedback.textContent = "Address not found.";
+                feedback.textContent = "Address not found or invalid.";
                 feedback.className = "error";
             }
         }
@@ -200,6 +146,11 @@
                 zoningDetails.classList.add('hidden');
                 moreInfoButton.textContent = "More Info";
             }
+        }
+
+        function showAdditionalFields() {
+            document.getElementById('additionalFields').classList.remove('hidden');
+            document.getElementById('submissionSection').classList.remove('hidden');
         }
     </script>
 </body>
