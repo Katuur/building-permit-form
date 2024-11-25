@@ -1,0 +1,100 @@
+{
+    "general_regulations": {
+        "land_use": {
+            "no_prohibited_uses": true,
+            "child_care": "Permitted in all zones",
+            "vape_retail": "Prohibited in all zones"
+        },
+        "landscaping": {
+            "required": true,
+            "screening": "Fences or walls of 1.2 meters adjoining residential zones"
+        },
+        "parking": {
+            "visitor_ratio": "1 space per 4 units",
+            "commercial_ratio": "1 space per 37 m\u00b2 of floor area"
+        },
+        "building_separation_distance": "4 meters"
+    },
+    "definitions": {
+        "secondary_suite": "A dwelling unit accessory to a single family or two-family dwelling use.",
+        "yard": "That part of a site required to be unoccupied and unobstructed by buildings.",
+        "floor_area_ratio": "The ratio of a building's total floor area to the size of the piece of land upon which it is built."
+    },
+    "zones": {
+        "RS1": {
+            "type": "Single-Family Residential",
+            "permitted_uses": [
+                "Single-Family Dwelling",
+                "Accessory Buildings",
+                "Home-Based Business",
+                "Child Care Facility",
+                "Secondary Suites"
+            ],
+            "density": {
+                "minimum_lot_area": "557.5 m\u00b2",
+                "maximum_FAR": 0.35
+            },
+            "building_rules": {
+                "maximum_height": "7.62 meters",
+                "storeys": 2,
+                "setbacks": {
+                    "front": "7.6 meters",
+                    "rear": "9.1 meters",
+                    "side": "1.52 meters"
+                },
+                "site_coverage": "40%"
+            },
+            "parking": {
+                "spaces_per_unit": 1
+            }
+        },
+        "AC1": {
+            "type": "Ambleside Centre Mixed-Use",
+            "permitted_uses": [
+                "Retail",
+                "Professional Offices",
+                "Personal Services",
+                "Apartments (Above Commercial)",
+                "Restaurants"
+            ],
+            "density": {
+                "base_FAR": 1.0,
+                "maximum_FAR_with_amenities": 1.75
+            },
+            "building_rules": {
+                "maximum_height": "11.3 meters (3 storeys)",
+                "setbacks": {
+                    "front": "0.9 meters",
+                    "rear": "1.2 meters"
+                }
+            },
+            "parking": {
+                "commercial": "1 space per 37 m\u00b2",
+                "residential": "1 space per unit or 84 m\u00b2"
+            }
+        },
+        "CD5": {
+            "type": "Comprehensive Development",
+            "permitted_uses": [
+                "Community Care",
+                "Child Care",
+                "Senior Housing"
+            ],
+            "density": {
+                "maximum_units": 210,
+                "maximum_FAR": 0.52
+            },
+            "building_rules": {
+                "maximum_height": "14.3 meters",
+                "setbacks": {
+                    "front": "7.6 meters",
+                    "side": "1.5 meters",
+                    "rear": "6 meters"
+                }
+            },
+            "parking": {
+                "spaces_per_bed": "1 per 3 beds"
+            }
+        }
+    }
+}

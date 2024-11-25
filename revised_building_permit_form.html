@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Permit Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        form {
+            width: 50%;
+            max-width: 600px;
+            min-width: 300px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .form-section {
+            margin-bottom: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY&libraries=places"></script>
+</head>
+<body>
+    <form id="permitForm">
+        <!-- Step 1: Property Address -->
+        <div class="form-section" id="step1">
+            <h3>Step 1: Property Address</h3>
+            <label for="propertyAddress">Enter Property Address:</label>
+            <input 
+                type="text" 
+                id="propertyAddress" 
+                placeholder="Enter property address" 
+                oninput="validateAddress()" 
+                required
+            >
+            <button type="button" id="continueButton" onclick="fetchPropertyInfo()">Continue</button>
+            <p id="addressFeedback"></p>
+        </div>
+
+        <!-- Property and Zoning Information -->
+        <div class="form-section hidden" id="propertyInfoSection">
+            <h3>Property Information</h3>
+            <p><strong>Address:</strong> <span id="propertyAddressDisplay"></span></p>
+            <p><strong>Zoning:</strong> <span id="zoningType"></span></p>
+            <p><strong>Lot Size:</strong> <span id="lotSize"></span></p>
+            <p><strong>Setbacks:</strong> <span id="setbacks"></span></p>
+            <button type="button" onclick="showPermitOptions()">Next</button>
+        </div>
+
+        <!-- Permit Options -->
+        <div class="form-section hidden" id="permitOptionsSection">
+            <h3>Eligible Permits</h3>
+            <p>Select the type of permit you wish to apply for:</p>
+            <select id="permitType" onchange="showPermitDetails()" required>
+                <option value="">--Select--</option>
+            </select>
+        </div>
+
+        <!-- Permit Details -->
+        <div class="form-section hidden" id="permitDetailsSection">
+            <h3>Permit Details</h3>
+            <label for="details">Describe the Scope of Work:</label>
+            <textarea id="details" placeholder="Provide detailed information about your work"></textarea>
+            <button type="submit">Submit Application</button>
+        </div>
+    </form>
+
+    <script>
+        let autocomplete;
+
+        // Initialize Google Places Autocomplete
+        function initAutocomplete() {
+            const input = document.getElementById("propertyAddress");
+            autocomplete = new google.maps.places.Autocomplete(input);
+        }
+
+        // Validate Address in Real-Time
+        function validateAddress() {
+            const address = document.getElementById("propertyAddress").value.trim();
+            const feedback = document.getElementById("addressFeedback");
+            if (address.length < 5) {
+                feedback.textContent = "Address is too short.";
+                feedback.className = "error";
+            } else {
+                feedback.textContent = "Address looks valid.";
+                feedback.className = "success";
+            }
+        }
+
+        // Fetch Property Information
+        function fetchPropertyInfo() {
+            const address = document.getElementById("propertyAddress").value.trim();
+            const feedback = document.getElementById("addressFeedback");
+            const propertyInfoSection = document.getElementById("propertyInfoSection");
+            const propertyAddressDisplay = document.getElementById("propertyAddressDisplay");
+            const zoningType = document.getElementById("zoningType");
+            const lotSize = document.getElementById("lotSize");
+            const setbacks = document.getElementById("setbacks");
+
+            feedback.textContent = "";
+
+            // Mock property data lookup
+            const mockData = {
+                "123 Main St": {
+                    zoning: "RS1",
+                    lotSize: "600 m²",
+                    setbacks: "Front: 7.6m, Rear: 9.1m, Side: 1.5m"
+                },
+                "456 Oak Ave": {
+                    zoning: "AC1",
+                    lotSize: "1,200 m²",
+                    setbacks: "Front: 1m, Rear: 1.5m, Side: 1.5m"
+                }
+            };
+
+            const propertyData = mockData[address];
+
+            if (propertyData) {
+                propertyAddressDisplay.textContent = address;
+                zoningType.textContent = propertyData.zoning;
+                lotSize.textContent = propertyData.lotSize;
+                setbacks.textContent = propertyData.setbacks;
+
+                propertyInfoSection.classList.remove("hidden");
+            } else {
+                feedback.textContent = "Address not found in the system.";
+                feedback.className = "error";
+            }
+        }
+
+        // Show Permit Options Based on Property Info
+        function showPermitOptions() {
+            const permitOptionsSection = document.getElementById("permitOptionsSection");
+            const permitTypeSelect = document.getElementById("permitType");
+
+            // Mock zoning-based permit options
+            const zoningPermitOptions = {
+                RS1: ["New Construction", "Secondary Suites", "Pools", "Retaining Walls"],
+                AC1: ["Renovations", "Commercial Additions", "Solar Panels"]
+            };
+
+            const zoning = document.getElementById("zoningType").textContent;
+            permitTypeSelect.innerHTML = "<option value=''>--Select--</option>"; // Clear existing options
+
+            if (zoningPermitOptions[zoning]) {
+                zoningPermitOptions[zoning].forEach(option => {
+                    const opt = document.createElement("option");
+                    opt.value = option;
+                    opt.textContent = option;
+                    permitTypeSelect.appendChild(opt);
+                });
+            }
+
+            permitOptionsSection.classList.remove("hidden");
+        }
+
+        // Show Permit Details Section
+        function showPermitDetails() {
+            document.getElementById("permitDetailsSection").classList.remove("hidden");
+        }
+
+        // Initialize Google Places Autocomplete when page loads
+        window.onload = initAutocomplete;
+    </script>
+</body>
+</html>
